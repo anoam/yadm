@@ -7,7 +7,7 @@ RSpec.describe "Yadm::Manager" do
     obj = double(:object)
     manager.register_object(:my_object, obj)
 
-    expect(mager.resolve(:my_object)).to be obj
+    expect(manager.resolve(:my_object)).to be obj
   end
 
   it "stores two objects" do
@@ -27,6 +27,6 @@ RSpec.describe "Yadm::Manager" do
 
   it  "rises error on conflict" do
     manager.register_object(:my_object, double(:object_1))
-    expect { manager.register(:my_object, double(:object_2)) }.to raise_error
+    expect { manager.register_object(:my_object, double(:object_2)) }.to raise_error(Yadm::AlreadyRegistered)
   end
 end
