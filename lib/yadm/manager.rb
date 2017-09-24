@@ -3,6 +3,7 @@ module Yadm
   AlreadyRegistered = Class.new(StandardError)
   UnknownEntity = Class.new(StandardError)
 
+  # Provides registering and resolving objects
   class Manager
 
     # Registers new object. In future object could be resolved with given key.
@@ -24,7 +25,7 @@ module Yadm
 
     # Register block for future resolving
     # @param key [Symbol] identifier fo resolving object
-    # @yieldparam manager [Yadm::Manager]
+    # @yieldparam manager [#resolve]
     # @yieldreturn [Object] object to be resolved with given key
     def register(key, &block)
       container = build_lambda_container(block)
