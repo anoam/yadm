@@ -36,15 +36,11 @@ module Yadm
     private
 
     def add_container(key, container)
-      raise AlreadyRegistered if key_registered?(key)
-
-      storage[key] = container
+      storage.add(key, container)
     end
 
     def find_container(key)
-      raise UnknownEntity unless key_registered?(key)
-
-      storage[key]
+      storage.find(key)
     end
 
     def build_simple_container(object)
@@ -55,12 +51,8 @@ module Yadm
       LambdaContainer.new(self, lambda)
     end
 
-    def key_registered?(key)
-      storage.key?(key)
-    end
-
     def storage
-      @storage ||= {}
+      @storage ||= Storage.new
     end
 
   end
