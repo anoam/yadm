@@ -10,22 +10,16 @@ module Yadm
     # @param object [Object] any object to store in container
     # @raise [AlreadyRegistered] if given key already was used for other object
     def register_object(key, object)
-      raise AlreadyRegistered if key_registered?(key)
+      container = build_simple_container(object)
 
-      storage[key] = object
+      add_container(key, container)
     end
 
     # Resolve object using given key
     # @param [Symbol] key identifier fo resolving object
     # @return [Object]
     def resolve(key)
-      raise UnknownEntity unless key_registered?(key)
-
-      if lambda?(key)
-        storage[key].call(self)
-      else
-        storage[key]
-      end
+      find_container(key).object
     end
 
     # Register block for future resolving
@@ -33,13 +27,32 @@ module Yadm
     # @yieldparam manager [Yadm::Manager]
     # @yieldreturn [Object] object to be resolved with given key
     def register(key, &block)
-      raise AlreadyRegistered if key_registered?(key)
+      container = build_lambda_container(block)
 
-      storage[key] = block
-      lambdas.push(key)
+      add_container(key, container)
     end
 
     private
+
+    def add_container(key, container)
+      raise AlreadyRegistered if key_registered?(key)
+
+      storage[key] = container
+    end
+
+    def find_container(key)
+      raise UnknownEntity unless key_registered?(key)
+
+      storage[key]
+    end
+
+    def build_simple_container(object)
+      SimpleContainer.new(object)
+    end
+
+    def build_lambda_container(lambda)
+      LambdaContainer.new(self, lambda)
+    end
 
     def key_registered?(key)
       storage.key?(key)
@@ -49,12 +62,5 @@ module Yadm
       @storage ||= {}
     end
 
-    def lambda?(key)
-      lambdas.include?(key)
-    end
-
-    def lambdas
-      @lambdas ||= []
-    end
   end
 end
