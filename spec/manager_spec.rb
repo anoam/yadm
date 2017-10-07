@@ -1,4 +1,4 @@
-require 'rspec'
+require 'spec_helper'
 
 RSpec.describe "Yadm::Manager" do
   let(:manager) { Yadm::Manager.new }
@@ -92,6 +92,105 @@ RSpec.describe "Yadm::Manager" do
       expect do
         manager.register(:object) { obj_2 }
       end.to raise_error(Yadm::AlreadyRegistered)
+    end
+
+    context "when wasn't prepare" do
+      it "runs proc each time" do
+        foo = Class.new
+        manager.register(:foo) do
+          foo.new
+        end
+
+        object1 = manager.resolve(:foo)
+        object2 = manager.resolve(:foo)
+
+        expect(object1.object_id).not_to eql(object2.object_id)
+      end
+
+    end
+
+    context "when was prepeared" do
+      it "returns same object every time" do
+        foo = Class.new
+        manager.register(:foo) do
+          foo.new
+        end
+
+        manager.prepare!
+
+        object1 = manager.resolve(:foo)
+        object2 = manager.resolve(:foo)
+
+        expect(object1.object_id).to eql(object2.object_id)
+      end
+
+      it "uses same object for dependencies" do
+        foo = Class.new
+        bar = Struct.new(:foo)
+        manager.register(:foo) do
+          foo.new
+        end
+
+        manager.register(:bar) do |mgr|
+          bar.new(mgr.resolve(:foo))
+        end
+
+        manager.prepare!
+
+        object1 = manager.resolve(:bar)
+        object2 = manager.resolve(:bar)
+        expect(object1.foo.object_id).to eql(object2.foo.object_id)
+      end
+
+      it "uses same object for dependencies and registration order no metter" do
+        foo = Class.new
+        bar = Struct.new(:foo)
+
+        manager.register(:bar) do |mgr|
+          bar.new(mgr.resolve(:foo))
+        end
+
+        manager.register(:foo) do
+          foo.new
+        end
+
+        manager.prepare!
+
+        object1 = manager.resolve(:bar)
+        object2 = manager.resolve(:bar)
+        expect(object1.foo.object_id).to eql(object2.foo.object_id)
+      end
+
+      it "won't cache object after preparation" do
+        foo = Class.new
+        bar = Struct.new(:foo)
+
+        manager.register(:foo) do
+          foo.new
+        end
+
+        manager.prepare!
+
+        manager.register(:bar) do |mgr|
+          bar.new(mgr.resolve(:foo))
+        end
+
+        object1 = manager.resolve(:bar)
+        object2 = manager.resolve(:bar)
+
+        expect(object1.object_id).not_to eql(object2.object_id)
+        expect(object1.foo.object_id).to eql(object2.foo.object_id)
+      end
+
+      it "raises error if can't resolve dependencies" do
+        bar = Struct.new(:foo)
+
+        manager.register(:bar) do |mgr|
+          bar.new(mgr.resolve(:foo))
+        end
+
+        expect{ manager.prepare! }.to raise_error(Yadm::UnknownEntity)
+      end
     end
   end
 
