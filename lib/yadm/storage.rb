@@ -16,12 +16,18 @@ module Yadm
 
     # Find container that was added with given key
     # @param key [Symbol] identifier for finding object
-    # @return [#object] found container
+    # @return [#object, #prepare!] found container
     # @raise [UnknownEntity] if key wasn't registered
     def find(key)
       raise UnknownEntity unless key?(key)
 
       collection[key]
+    end
+
+    # Iterate throw all registered containers
+    # @yield [container] Gives each registered container to the block
+    def each_container(&block)
+      collection.each_value(&block)
     end
 
     private
@@ -34,4 +40,6 @@ module Yadm
       collection.key?(key)
     end
   end
+
+  private_constant :Storage
 end
