@@ -6,6 +6,10 @@ module Yadm
   # Provides registering and resolving objects
   class Manager
 
+    def initialize
+      @preparation_mode = false
+    end
+
     # Registers new object. In future object could be resolved with given key.
     # @param key [Symbol] identifier for further resolving object
     # @param object [Object] any object to store in container
@@ -20,7 +24,11 @@ module Yadm
     # @param [Symbol] key identifier fo resolving object
     # @return [Object]
     def resolve(key)
-      find_container(key).object
+      container = find_container(key)
+
+      container.prepare! if preparation_mode?
+
+      container.object
     end
 
     # Register block for future resolving
@@ -33,7 +41,28 @@ module Yadm
       add_container(key, container)
     end
 
+    # Prepare and cache all registered objects
+    def prepare!
+      preparation_started!
+
+      storage.each_container(&:prepare!)
+
+      preparation_finished!
+    end
+
     private
+
+    def preparation_mode?
+      @preparation_mode
+    end
+
+    def preparation_started!
+      @preparation_mode = true
+    end
+
+    def preparation_finished!
+      @preparation_mode = false
+    end
 
     def add_container(key, container)
       storage.add(key, container)

@@ -36,6 +36,8 @@ build-iPhoneSimulator/
 /_yardoc/
 /doc/
 /rdoc/
+# debugging history
+.byebug_history
 
 ## Environment normalization:
 /.bundle/
