@@ -1,0 +1,12 @@
+-
+  name: "foo"
+  class: "Foo"
+-
+  name: "bar"
+  class: "Bar"
+  dependencies:
+    - "foo"
+
+-
+  name: "baz"
+  class: "Bar::Baz"
