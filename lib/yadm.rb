@@ -1,9 +1,9 @@
-require "yadm/version"
-require "yadm/manager"
-require "yadm/lambda_container"
-require "yadm/simple_container"
-require "yadm/storage"
-require "yadm/errors"
+require_relative "yadm/version"
+require_relative "yadm/manager"
+require_relative "yadm/lambda_container"
+require_relative "yadm/simple_container"
+require_relative "yadm/storage"
+require_relative "yadm/errors"
 require "yaml"
 
 module Yadm

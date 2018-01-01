@@ -5,7 +5,7 @@ RSpec.describe Yadm do
     expect(Yadm::VERSION).not_to be nil
   end
 
-  describe "#load_yaml" do
+  describe ".load_yaml" do
 
     it "returns exemplar of Manager" do
       _define_test_constants
