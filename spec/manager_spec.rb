@@ -23,6 +23,17 @@ RSpec.describe "Yadm::Manager" do
       expect(manager.resolve(:second_object)).to be obj_2
     end
 
+    it "can use string keys as good as symbols" do
+      obj_1 = double(:object_1)
+      obj_2 = double(:object_2)
+
+      manager.register_object("first_object", obj_1)
+      manager.register_object(:second_object, obj_2)
+
+      expect(manager.resolve(:first_object)).to be obj_1
+      expect(manager.resolve("second_object")).to be obj_2
+    end
+
     it "resolves proc" do
       l = -> { "Proc result" }
       manager.register_object(:lambda, l)

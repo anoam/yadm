@@ -49,7 +49,6 @@ RSpec.describe Yadm do
     Bar.send(:remove_const, :Baz)
     Object.send(:remove_const, :Foo)
     Object.send(:remove_const, :Bar)
-
   end
 
 end
