@@ -30,10 +30,10 @@ module Yadm
 
       dependencies = entry["dependencies"] || []
 
-      manager.register(entry["name"].to_sym) do
+      manager.register(entry["name"]) do
 
         Object.const_get(entry["class"]).new(
-          *dependencies.map{ |dependency| manager.resolve(dependency.to_sym) }
+          *dependencies.map{ |dependency| manager.resolve(dependency) }
         )
 
       end
