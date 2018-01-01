@@ -1,8 +1,5 @@
 module Yadm
 
-  AlreadyRegistered = Class.new(StandardError)
-  UnknownEntity = Class.new(StandardError)
-
   # Provides registering and resolving objects
   class Manager
 

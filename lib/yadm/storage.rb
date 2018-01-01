@@ -11,7 +11,7 @@ module Yadm
     def add(key, container)
       raise AlreadyRegistered if key?(key)
 
-      collection[key] = container
+      collection[ukey(key)] = container
     end
 
     # Find container that was added with given key
@@ -21,7 +21,7 @@ module Yadm
     def find(key)
       raise UnknownEntity unless key?(key)
 
-      collection[key]
+      collection[ukey(key)]
     end
 
     # Iterate throw all registered containers
@@ -37,7 +37,11 @@ module Yadm
     end
 
     def key?(key)
-      collection.key?(key)
+      collection.key?(ukey(key))
+    end
+
+    def ukey(key)
+      key.to_sym
     end
   end
 
